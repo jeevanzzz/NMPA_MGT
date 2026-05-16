@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .glass-card {
+    @apply bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border border-white/40 dark:border-white/10 shadow-lg;
+  }
+  
+  .glass-header {
+    @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-white/40 dark:border-white/10 shadow-sm;
+  }
+
+  .premium-bg-light {
+    @apply bg-gradient-to-br from-slate-50 via-slate-100 to-blue-50/50;
+  }
+
+  .premium-bg-dark {
+    @apply bg-gradient-to-br from-slate-900 via-slate-800 to-[#0B132B];
+  }
+}
+
+/* Force some components to adopt glassmorphism globally for an immediate premium feel without rewriting every page */
+.bg-white.dark\:bg-slate-800 {
+  background-color: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(16px) !important;
+}
+
+.dark .bg-white.dark\:bg-slate-800 {
+  background-color: rgba(30, 41, 59, 0.6) !important;
+  backdrop-filter: blur(16px) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
