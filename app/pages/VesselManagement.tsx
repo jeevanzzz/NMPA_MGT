@@ -59,7 +59,7 @@ export default function VesselManagement() {
   const handleSaveVessel = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const newVessel = {
+    const newVessel: any = {
       id: currentVessel ? currentVessel.id : Date.now(),
       name: formData.get('name') as string,
       imoNumber: formData.get('imoNumber') as string,
@@ -71,7 +71,7 @@ export default function VesselManagement() {
       ata: formData.get('ata') as string || null,
       length: Number(formData.get('length')),
       draft: Number(formData.get('draft')),
-      assignedDock: formData.get('assignedDock') as string || null,
+      assignedDock: formData.get('assignedDock') as string || '',
       arrivalTime: formData.get('eta') as string,
       departureTime: null
     };
