@@ -55,12 +55,12 @@ export default function Dashboard() {
     socket.on('vessel_activity', (data) => {
       setRecentActivity(prev => {
         const newActivity = [{
-          id: data.id.toString(),
-          name: data.vesselName,
+          id: data.id ? data.id.toString() : Math.random().toString(),
+          name: data.vesselName || 'Unknown Vessel',
           imoNumber: `IMO${Math.floor(1000000 + Math.random() * 9000000)}`,
           assignedDock: `Berth ${Math.floor(1 + Math.random() * 10)}`,
           cargoType: 'Mixed',
-          status: data.status.toLowerCase().replace(' ', '')
+          status: (data.status || 'unknown').toLowerCase().replace(' ', '')
         }, ...prev];
         return newActivity.slice(0, 5); // keep only 5
       });
