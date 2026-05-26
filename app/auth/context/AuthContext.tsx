@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { User, AuthState, LoginResponse } from '../types/auth';
 import { authService } from '../services/authService';
-import { getToken, setToken, removeToken } from '../utils/token';
+import { getToken, setToken, removeToken, decodeMockToken } from '../utils/token';
 import { LoginCredentials } from '../validation/authSchema';
 
 interface AuthContextType extends AuthState {
@@ -50,6 +50,60 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     checkAuth();
   }, []);
 
+  const logout = () => {
+    removeToken();
+    setState({
+      user: null,
+      isAuthenticated: false,
+      isLoading: false,
+      token: null,
+    });
+  };
+
+  // Session Management: Inactivity auto-logout & token expiration check
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+    let activityTimeout: ReturnType<typeof setTimeout>;
+
+    const handleSessionExpired = () => {
+      logout();
+      window.location.href = '/session-expired';
+    };
+
+    const resetActivity = () => {
+      clearTimeout(activityTimeout);
+      // Enterprise Auto-Logout: 15 minutes of inactivity
+      activityTimeout = setTimeout(handleSessionExpired, 15 * 60 * 1000); 
+    };
+
+    if (state.isAuthenticated && state.token) {
+      // 1. Setup token expiration check
+      interval = setInterval(() => {
+        const decoded = decodeMockToken(state.token!);
+        if (decoded && decoded.exp * 1000 < Date.now()) {
+          handleSessionExpired();
+        }
+      }, 30000); // Check every 30 seconds
+
+      // 2. Setup inactivity tracker
+      window.addEventListener('mousemove', resetActivity);
+      window.addEventListener('keypress', resetActivity);
+      window.addEventListener('click', resetActivity);
+      window.addEventListener('scroll', resetActivity);
+      
+      resetActivity();
+    }
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(activityTimeout);
+      window.removeEventListener('mousemove', resetActivity);
+      window.removeEventListener('keypress', resetActivity);
+      window.removeEventListener('click', resetActivity);
+      window.removeEventListener('scroll', resetActivity);
+    };
+  }, [state.isAuthenticated, state.token]);
+
   const login = async (credentials: LoginCredentials) => {
     try {
       const { user, token } = await authService.login(credentials);
@@ -63,16 +117,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       throw error;
     }
-  };
-
-  const logout = () => {
-    removeToken();
-    setState({
-      user: null,
-      isAuthenticated: false,
-      isLoading: false,
-      token: null,
-    });
   };
 
   return (

@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
+import { useAuth } from '../auth/hooks/useAuth';
 import { socket } from '../services/socket';
+import { SessionTimer } from './auth/SessionTimer';
 import {
   LayoutDashboard,
   Ship,
@@ -49,11 +51,20 @@ const menuItems = [
 export default function DashboardLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useAuth();
+
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
-  const [currentRole, setCurrentRole] = useState('Super Admin');
+  const [currentRole, setCurrentRole] = useState(user?.role || 'Super Admin');
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+
+  // Sync role if user changes
+  useEffect(() => {
+    if (user?.role) {
+      setCurrentRole(user.role);
+    }
+  }, [user?.role]);
 
   // Automatically toggle dark mode class on the HTML element
   useEffect(() => {
@@ -80,6 +91,7 @@ export default function DashboardLayout() {
   }, [location.pathname]);
 
   const handleLogout = () => {
+    logout();
     navigate('/');
   };
 
@@ -162,10 +174,13 @@ export default function DashboardLayout() {
                   {sidebarOpen ? (
                      <X className="w-5 h-5 text-slate-700 dark:text-slate-300" />
                   ) : (
-                    <Menu className="w-5 h-5 text-slate-700 dark:text-slate-300" />
-                  )}
-                </button>
-                <div className="hidden md:block">
+                    <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-[#0A0F1E]"></span>
+                )}
+              </button>
+
+              <SessionTimer />
+
+              <div className="relative group">
                   <h1 className="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-tight">
                     {menuItems.find((item) => item.path === location.pathname)?.label || 'Dashboard Overview'}
                   </h1>
@@ -214,7 +229,7 @@ export default function DashboardLayout() {
                       {currentRole.split(' ').map(n => n[0]).join('').substring(0,2)}
                     </div>
                     <div className="hidden md:block text-left">
-                      <p className="text-sm font-bold text-slate-900 dark:text-white leading-tight">Mock User</p>
+                      <p className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{user?.name || 'Mock User'}</p>
                       <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wide mt-0.5">{currentRole}</p>
                     </div>
                     <ChevronDown className="w-4 h-4 text-slate-400 ml-1 group-hover:text-blue-500 transition-colors" />
@@ -255,8 +270,18 @@ export default function DashboardLayout() {
           </header>
 
           {/* Page Content */}
-          <main className="p-6">
-            <Outlet />
+          <main className="p-6 relative overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.25, ease: "easeInOut" }}
+              >
+                <Outlet />
+              </motion.div>
+            </AnimatePresence>
           </main>
         </div>
       </div>
