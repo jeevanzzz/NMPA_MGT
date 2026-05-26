@@ -35,10 +35,18 @@ export default function Login() {
   const onSubmit = async (data: LoginCredentials) => {
     try {
       setError(null);
-      await login(data);
+      const user = await login(data);
       setIsSuccess(true);
+      
+      let redirectPath = '/dashboard';
+      if (user?.role === 'Dock Manager') redirectPath = '/dashboard/dock-operations';
+      else if (user?.role === 'Cargo Manager') redirectPath = '/dashboard/cargo-management';
+      else if (user?.role === 'Analytics Officer') redirectPath = '/dashboard/analytics-center';
+      else if (user?.role === 'Port Authority Admin') redirectPath = '/dashboard/operations-control';
+      else if (user?.role === 'Ship Operator') redirectPath = '/dashboard/vessel-control';
+
       setTimeout(() => {
-        navigate('/dashboard');
+        navigate(redirectPath);
       }, 1500);
     } catch (err: any) {
       setError(err.message || 'Authentication failed');
@@ -105,13 +113,23 @@ export default function Login() {
               initial={{ opacity: 0, y: -10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3"
+              className={`p-4 rounded-lg flex items-start gap-3 border transition-all duration-300 ${
+                error.includes('Unauthorized')
+                  ? 'bg-red-500/20 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.4)] animate-pulse'
+                  : 'bg-red-500/10 border-red-500/30'
+              }`}
             >
               <AlertOctagon className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
               <div className="text-red-400 text-sm font-medium leading-relaxed">
-                {error.split('. ').map((line, i) => (
-                  <span key={i} className="block">{line}{i < error.split('. ').length - 1 ? '.' : ''}</span>
-                ))}
+                {error.split('. ').map((line, i) => {
+                  const isLast = i === error.split('. ').length - 1;
+                  if (!line) return null;
+                  return (
+                    <span key={i} className="block">
+                      {line}{!isLast && !line.endsWith('.') ? '.' : ''}
+                    </span>
+                  );
+                })}
               </div>
             </motion.div>
           )}

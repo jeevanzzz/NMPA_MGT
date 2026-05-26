@@ -86,7 +86,15 @@ export const router = createHashRouter([
         element: <Dashboard />,
       },
       {
-        path: 'vessels',
+        path: 'operations-control',
+        element: (
+          <RoleGuard allowedRoles={['Super Admin', 'Port Authority Admin']}>
+            <Dashboard />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'vessel-control',
         element: (
           <RoleGuard allowedRoles={['Super Admin', 'Port Authority Admin', 'Dock Manager', 'Ship Operator']}>
             <VesselManagement />
@@ -94,7 +102,7 @@ export const router = createHashRouter([
         ),
       },
       {
-        path: 'docks',
+        path: 'dock-operations',
         element: (
           <RoleGuard allowedRoles={['Super Admin', 'Port Authority Admin', 'Dock Manager']}>
             <DockManagement />
@@ -102,7 +110,7 @@ export const router = createHashRouter([
         ),
       },
       {
-        path: 'cargo',
+        path: 'cargo-management',
         element: (
           <RoleGuard allowedRoles={['Super Admin', 'Port Authority Admin', 'Cargo Manager']}>
             <CargoTracking />
@@ -118,7 +126,7 @@ export const router = createHashRouter([
         ),
       },
       {
-        path: 'analytics',
+        path: 'analytics-center',
         element: (
           <RoleGuard allowedRoles={['Super Admin', 'Port Authority Admin', 'Analytics Officer']}>
             <Analytics />

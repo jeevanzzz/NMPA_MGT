@@ -5,7 +5,7 @@ import { getToken, setToken, removeToken, decodeMockToken } from '../utils/token
 import { LoginCredentials } from '../validation/authSchema';
 
 interface AuthContextType extends AuthState {
-  login: (credentials: LoginCredentials) => Promise<void>;
+  login: (credentials: LoginCredentials) => Promise<User>;
   logout: () => void;
   checkAuth: () => Promise<void>;
 }
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const handleSessionExpired = () => {
       logout();
-      window.location.href = '/session-expired';
+      window.location.hash = '#/session-expired';
     };
 
     const resetActivity = () => {
@@ -104,7 +104,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [state.isAuthenticated, state.token]);
 
-  const login = async (credentials: LoginCredentials) => {
+  const login = async (credentials: LoginCredentials): Promise<User> => {
     try {
       const { user, token } = await authService.login(credentials);
       setToken(token, credentials.remember);
@@ -114,6 +114,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isLoading: false,
         token,
       });
+      return user;
     } catch (error) {
       throw error;
     }

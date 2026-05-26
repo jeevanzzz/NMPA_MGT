@@ -36,11 +36,12 @@ const ROLES = [
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard Overview', path: '/dashboard', roles: ROLES },
-  { icon: Ship, label: 'Vessel Management', path: '/dashboard/vessels', roles: ['Super Admin', 'Port Authority Admin', 'Dock Manager', 'Ship Operator'] },
-  { icon: Anchor, label: 'Dock Allocation', path: '/dashboard/docks', roles: ['Super Admin', 'Port Authority Admin', 'Dock Manager'] },
-  { icon: Package, label: 'Cargo Tracking', path: '/dashboard/cargo', roles: ['Super Admin', 'Port Authority Admin', 'Cargo Manager'] },
+  { icon: LayoutDashboard, label: 'Operations Control', path: '/dashboard/operations-control', roles: ['Port Authority Admin'] },
+  { icon: Ship, label: 'Vessel Management', path: '/dashboard/vessel-control', roles: ['Super Admin', 'Port Authority Admin', 'Dock Manager', 'Ship Operator'] },
+  { icon: Anchor, label: 'Dock Allocation', path: '/dashboard/dock-operations', roles: ['Super Admin', 'Port Authority Admin', 'Dock Manager'] },
+  { icon: Package, label: 'Cargo Tracking', path: '/dashboard/cargo-management', roles: ['Super Admin', 'Port Authority Admin', 'Cargo Manager'] },
   { icon: DollarSign, label: 'Billing & Tariff', path: '/dashboard/billing', roles: ['Super Admin', 'Port Authority Admin'] },
-  { icon: BarChart3, label: 'Analytics & Predictions', path: '/dashboard/analytics', roles: ['Super Admin', 'Port Authority Admin', 'Analytics Officer'] },
+  { icon: BarChart3, label: 'Analytics & Predictions', path: '/dashboard/analytics-center', roles: ['Super Admin', 'Port Authority Admin', 'Analytics Officer'] },
   { icon: FileText, label: 'Reporting System', path: '/dashboard/reports', roles: ['Super Admin', 'Port Authority Admin', 'Analytics Officer', 'Dock Manager', 'Cargo Manager'] },
   { icon: Bell, label: 'Alerts & Notifications', path: '/dashboard/notifications', roles: ROLES },
   { icon: Users, label: 'User Roles', path: '/dashboard/users', roles: ['Super Admin'] },

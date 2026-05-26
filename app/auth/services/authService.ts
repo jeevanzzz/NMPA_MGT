@@ -38,8 +38,8 @@ const LOCK_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
-    // Simulate network delay for realistic feel
-    await delay(1200);
+    // Simulate network delay for realistic enterprise loading sequence
+    await delay(2800);
 
     const email = credentials.email.toLowerCase();
     const userRecord = failedAttempts.get(email) || { count: 0, lockedUntil: null };
@@ -47,7 +47,7 @@ export const authService = {
     // Check if account is currently locked
     if (userRecord.lockedUntil && userRecord.lockedUntil > Date.now()) {
       const remainingMins = Math.ceil((userRecord.lockedUntil - Date.now()) / 60000);
-      throw new Error(`SECURITY ALERT: Account locked due to multiple unauthorized access attempts. Try again in ${remainingMins} minute(s).`);
+      throw new Error(`Unauthorized access attempts detected. Security monitoring activated. Cooldown: ${remainingMins} minute(s).`);
     } else if (userRecord.lockedUntil && userRecord.lockedUntil <= Date.now()) {
       // Lock expired, reset
       userRecord.count = 0;
@@ -56,18 +56,17 @@ export const authService = {
 
     const user = MOCK_USERS.find(u => u.email === credentials.email);
 
-    // In a real app, we would verify the password hash here.
     if (!user || credentials.password !== 'Secure@123') {
       userRecord.count += 1;
       
       if (userRecord.count >= MAX_ATTEMPTS) {
         userRecord.lockedUntil = Date.now() + LOCK_DURATION;
         failedAttempts.set(email, userRecord);
-        throw new Error(`SECURITY ALERT: Account locked due to multiple unauthorized access attempts. Try again in 5 minute(s).`);
+        throw new Error(`Unauthorized access attempts detected. Security monitoring activated. Cooldown: 5 minute(s).`);
       }
       
       failedAttempts.set(email, userRecord);
-      throw new Error(`Authentication failed. ${MAX_ATTEMPTS - userRecord.count} attempt(s) remaining before lock.`);
+      throw new Error(`Authorization failed. Credential verification rejected. Remaining attempts: ${MAX_ATTEMPTS - userRecord.count}.`);
     }
 
     // Success - clear attempts

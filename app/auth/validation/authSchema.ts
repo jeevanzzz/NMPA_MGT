@@ -1,28 +1,34 @@
 import { z } from 'zod';
 
 const passwordSchema = z
-  .string()
-  .min(8, 'Password must be at least 8 characters')
-  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-  .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-  .regex(/[0-9]/, 'Password must contain at least one number')
-  .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character');
+  .string({ required_error: 'Secure access key required' })
+  .min(1, 'Secure access key required')
+  .min(8, 'Authentication strength insufficient')
+  .regex(/[A-Z]/, 'Authentication strength insufficient')
+  .regex(/[a-z]/, 'Authentication strength insufficient')
+  .regex(/[0-9]/, 'Authentication strength insufficient')
+  .regex(/[^A-Za-z0-9]/, 'Authentication strength insufficient');
+
+const emailSchema = z
+  .string({ required_error: 'Official credentials required' })
+  .min(1, 'Official credentials required')
+  .email('Unauthorized government email format');
 
 export const loginSchema = z.object({
-  email: z.string().email('Invalid email address format'),
-  password: z.string().min(1, 'Password is required'),
+  email: emailSchema,
+  password: z.string({ required_error: 'Secure access key required' }).min(1, 'Secure access key required'),
   remember: z.boolean().optional(),
 });
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().email('Invalid email address format'),
+  email: emailSchema,
 });
 
 export const resetPasswordSchema = z.object({
   password: passwordSchema,
-  confirmPassword: z.string()
+  confirmPassword: z.string({ required_error: 'Secure access key required' })
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: "Access key validation failed",
   path: ["confirmPassword"],
 });
 
