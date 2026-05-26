@@ -10,6 +10,14 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/main.tsx"></script>
+    <script>
+      window.onerror = function(msg, src, line, col, err) {
+        document.body.innerHTML += '<div style="color:red; z-index:9999; position:absolute; top:0; background:white; padding:20px; width:100%;">' + msg + '<br>' + src + ':' + line + '</div>';
+      };
+      window.addEventListener('unhandledrejection', function(event) {
+        document.body.innerHTML += '<div style="color:red; z-index:9999; position:absolute; top:0; background:white; padding:20px; width:100%;">Unhandled Rejection: ' + (event.reason && event.reason.stack ? event.reason.stack : event.reason) + '</div>';
+      });
+    </script>
+    <script type="module" src="./main.tsx"></script>
   </body>
 </html>
