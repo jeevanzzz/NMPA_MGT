@@ -93,7 +93,7 @@ export default function Dashboard() {
     {
       icon: Package,
       label: 'Cargo Volume (MT)',
-      value: liveStats.cargoVolume.toLocaleString(),
+      value: liveStats.cargoVolume?.toLocaleString() ?? '0',
       bgColor: 'bg-teal-600/10 dark:bg-teal-500/20',
       iconColor: 'text-teal-700 dark:text-teal-400',
       borderColor: 'border-teal-200 dark:border-teal-900',
@@ -101,7 +101,7 @@ export default function Dashboard() {
     {
       icon: DollarSign,
       label: 'Revenue Generated',
-      value: `₹${(liveStats.revenueGenerated / 1000).toFixed(0)}K`,
+      value: `₹${((liveStats.revenueGenerated || 0) / 1000).toFixed(0)}K`,
       bgColor: 'bg-emerald-600/10 dark:bg-emerald-500/20',
       iconColor: 'text-emerald-700 dark:text-emerald-400',
       borderColor: 'border-emerald-200 dark:border-emerald-900',

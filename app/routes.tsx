@@ -1,12 +1,22 @@
-import { createHashRouter } from 'react-router';
+import { createHashRouter } from 'react-router-dom';
 import PublicLayout from './components/PublicLayout';
 import Home from './pages/Home';
 import About from './pages/About';
 import Services from './pages/Services';
 import Contact from './pages/Contact';
 
-import Login from './pages/Login';
-import ForgotPassword from './pages/ForgotPassword';
+// Auth Pages
+import Login from './pages/auth/Login';
+import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPassword from './pages/auth/ResetPassword';
+import Unauthorized from './pages/auth/Unauthorized';
+import SessionExpired from './pages/auth/SessionExpired';
+
+// Guards
+import { ProtectedRoute } from './auth/guards/ProtectedRoute';
+import { PublicRoute } from './auth/guards/PublicRoute';
+import { RoleGuard } from './auth/guards/RoleGuard';
+
 import Dashboard from './pages/Dashboard';
 import VesselManagement from './pages/VesselManagement';
 import DockManagement from './pages/DockManagement';
@@ -25,35 +35,51 @@ export const router = createHashRouter([
     path: '/',
     element: <PublicLayout />,
     children: [
-      {
-        index: true,
-        element: <Home />,
-      },
-      {
-        path: 'about',
-        element: <About />,
-      },
-      {
-        path: 'services',
-        element: <Services />,
-      },
-      {
-        path: 'contact',
-        element: <Contact />,
-      },
+      { index: true, element: <Home /> },
+      { path: 'about', element: <About /> },
+      { path: 'services', element: <Services /> },
+      { path: 'contact', element: <Contact /> },
     ],
   },
   {
     path: '/login',
-    element: <Login />,
+    element: (
+      <PublicRoute>
+        <Login />
+      </PublicRoute>
+    ),
   },
   {
     path: '/forgot-password',
-    element: <ForgotPassword />,
+    element: (
+      <PublicRoute>
+        <ForgotPassword />
+      </PublicRoute>
+    ),
+  },
+  {
+    path: '/reset-password',
+    element: (
+      <PublicRoute>
+        <ResetPassword />
+      </PublicRoute>
+    ),
+  },
+  {
+    path: '/unauthorized',
+    element: <Unauthorized />,
+  },
+  {
+    path: '/session-expired',
+    element: <SessionExpired />,
   },
   {
     path: '/dashboard',
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute>
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,
@@ -61,27 +87,51 @@ export const router = createHashRouter([
       },
       {
         path: 'vessels',
-        element: <VesselManagement />,
+        element: (
+          <RoleGuard allowedRoles={['Super Admin', 'Port Authority Admin', 'Dock Manager', 'Ship Operator']}>
+            <VesselManagement />
+          </RoleGuard>
+        ),
       },
       {
         path: 'docks',
-        element: <DockManagement />,
+        element: (
+          <RoleGuard allowedRoles={['Super Admin', 'Port Authority Admin', 'Dock Manager']}>
+            <DockManagement />
+          </RoleGuard>
+        ),
       },
       {
         path: 'cargo',
-        element: <CargoTracking />,
+        element: (
+          <RoleGuard allowedRoles={['Super Admin', 'Port Authority Admin', 'Cargo Manager']}>
+            <CargoTracking />
+          </RoleGuard>
+        ),
       },
       {
         path: 'billing',
-        element: <Billing />,
+        element: (
+          <RoleGuard allowedRoles={['Super Admin', 'Port Authority Admin']}>
+            <Billing />
+          </RoleGuard>
+        ),
       },
       {
         path: 'analytics',
-        element: <Analytics />,
+        element: (
+          <RoleGuard allowedRoles={['Super Admin', 'Port Authority Admin', 'Analytics Officer']}>
+            <Analytics />
+          </RoleGuard>
+        ),
       },
       {
         path: 'reports',
-        element: <Reports />,
+        element: (
+          <RoleGuard allowedRoles={['Super Admin', 'Port Authority Admin', 'Analytics Officer']}>
+            <Reports />
+          </RoleGuard>
+        ),
       },
       {
         path: 'notifications',
@@ -89,11 +139,19 @@ export const router = createHashRouter([
       },
       {
         path: 'audit-logs',
-        element: <AuditLogs />,
+        element: (
+          <RoleGuard allowedRoles={['Super Admin']}>
+            <AuditLogs />
+          </RoleGuard>
+        ),
       },
       {
         path: 'users',
-        element: <UserManagement />,
+        element: (
+          <RoleGuard allowedRoles={['Super Admin']}>
+            <UserManagement />
+          </RoleGuard>
+        ),
       },
       {
         path: 'settings',
