@@ -3,33 +3,7 @@ import { LoginResponse, User } from '../types/auth';
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Mock database of users
-const MOCK_USERS: User[] = [
-  {
-    id: 'USR-001',
-    email: 'admin@nmpa.gov.in',
-    name: 'System Administrator',
-    role: 'Super Admin',
-    department: 'IT Security',
-    lastLogin: new Date().toISOString()
-  },
-  {
-    id: 'USR-002',
-    email: 'port.admin@nmpa.gov.in',
-    name: 'Port Authority Director',
-    role: 'Port Authority Admin',
-    department: 'Management',
-    lastLogin: new Date().toISOString()
-  },
-  {
-    id: 'USR-003',
-    email: 'dock.manager@nmpa.gov.in',
-    name: 'Dock Manager',
-    role: 'Dock Manager',
-    department: 'Operations',
-    lastLogin: new Date().toISOString()
-  }
-];
+import { MOCK_USERS } from '../../data/mockUsers';
 
 // Simulated account lock tracking
 const failedAttempts = new Map<string, { count: number; lockedUntil: number | null }>();

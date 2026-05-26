@@ -6,6 +6,16 @@ export type Role =
   | 'Ship Operator'
   | 'Analytics Officer';
 
+export interface Permissions {
+  canViewBilling: boolean;
+  canManageUsers: boolean;
+  canAccessAnalytics: boolean;
+  canManageDock: boolean;
+  canManageCargo: boolean;
+  canOperateVessels: boolean;
+  canViewReports: boolean;
+}
+
 export interface User {
   id: string;
   email: string;
@@ -13,6 +23,7 @@ export interface User {
   role: Role;
   department: string;
   lastLogin: string;
+  permissions: Permissions;
 }
 
 export interface AuthState {
