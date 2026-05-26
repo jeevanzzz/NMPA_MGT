@@ -227,49 +227,15 @@ export default function DashboardLayout() {
                 </button>
 
                 <div className="relative">
-                  <div 
-                    className="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-slate-700 cursor-pointer group"
-                    onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
-                  >
-                    <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm shadow-md group-hover:shadow-lg transition-all">
+                  <div className="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-slate-700">
+                    <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm shadow-md">
                       {currentRole.split(' ').map(n => n[0]).join('').substring(0,2)}
                     </div>
                     <div className="hidden md:block text-left">
-                      <p className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{user?.name || 'Mock User'}</p>
+                      <p className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{user?.name || 'Authorized Personnel'}</p>
                       <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wide mt-0.5">{currentRole}</p>
                     </div>
-                    <ChevronDown className="w-4 h-4 text-slate-400 ml-1 group-hover:text-blue-500 transition-colors" />
                   </div>
-
-                  <AnimatePresence>
-                    {roleDropdownOpen && (
-                      <motion.div 
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        className="absolute right-0 mt-3 w-56 glass-card rounded-xl shadow-2xl z-50 overflow-hidden border border-white/20 dark:border-slate-700/50"
-                      >
-                        <div className="px-4 py-3 border-b border-slate-100/50 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50">
-                          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Simulate Role</p>
-                        </div>
-                        <div className="py-2">
-                          {ROLES.map(role => (
-                            <button
-                              key={role}
-                              onClick={() => {
-                                setCurrentRole(role);
-                                setRoleDropdownOpen(false);
-                                navigate('/dashboard');
-                              }}
-                              className={`w-full text-left px-4 py-2.5 text-sm font-semibold transition-colors ${currentRole === role ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100/50 dark:hover:bg-slate-700/50'}`}
-                            >
-                              {role}
-                            </button>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
                 </div>
               </div>
             </div>

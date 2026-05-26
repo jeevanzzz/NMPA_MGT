@@ -30,7 +30,7 @@ export const authService = {
 
     const user = MOCK_USERS.find(u => u.email === credentials.email);
 
-    if (!user || credentials.password !== 'Secure@123') {
+    if (!user || credentials.password !== user.password) {
       userRecord.count += 1;
       
       if (userRecord.count >= MAX_ATTEMPTS) {
@@ -46,19 +46,22 @@ export const authService = {
     // Success - clear attempts
     failedAttempts.delete(email);
 
+    // Strip password from returned user object
+    const { password, ...safeUser } = user;
+
     // Generate mock JWT
     const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
     const payload = btoa(JSON.stringify({
-      sub: user.id,
-      email: user.email,
-      role: user.role,
+      sub: safeUser.id,
+      email: safeUser.email,
+      role: safeUser.role,
       exp: Math.floor(Date.now() / 1000) + (60 * 60 * 8) // 8 hours
     }));
     const signature = btoa('mock-signature-secure-nmpa');
     
     const token = `${header}.${payload}.${signature}`;
 
-    return { user, token };
+    return { user: safeUser as User, token };
   },
 
   async validateToken(token: string): Promise<User> {
