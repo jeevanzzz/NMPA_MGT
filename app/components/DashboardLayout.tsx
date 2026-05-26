@@ -180,9 +180,14 @@ export default function DashboardLayout() {
               </button>
 
               <SessionTimer />
+              
+              <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-widest">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                SECURE SESSION ACTIVE
+              </div>
 
               <div className="relative group">
-                  <h1 className="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-tight">
+                  <h1 className="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-tight ml-4">
                     {menuItems.find((item) => item.path === location.pathname)?.label || 'Dashboard Overview'}
                   </h1>
                 </div>

@@ -51,10 +51,25 @@ export const AuthCard = ({ children, title, subtitle }: AuthCardProps) => {
           <AuthHeader title={title} subtitle={subtitle} />
 
           {/* Body */}
-          <div className="p-8">
+          <div className="p-6 sm:p-8">
             {children}
           </div>
         </div>
+      </motion.div>
+
+      {/* Enterprise Security Footer */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 0.5 }}
+        className="absolute bottom-6 left-0 right-0 text-center px-4 z-10"
+      >
+        <p className="text-slate-400 font-mono text-[11px] sm:text-xs font-bold tracking-[0.2em] uppercase mb-1.5">
+          Authorized NMPA Personnel Only
+        </p>
+        <p className="text-slate-500/70 text-[9px] sm:text-[10px] max-w-lg mx-auto leading-relaxed tracking-wide">
+          Unauthorized access attempts are monitored and logged under secure port authority protocols.
+        </p>
       </motion.div>
     </div>
   );

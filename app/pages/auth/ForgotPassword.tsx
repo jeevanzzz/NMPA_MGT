@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Mail, ArrowLeft, KeyRound, AlertOctagon } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { authService } from '../../auth/services/authService';
@@ -11,10 +11,12 @@ import { AuthCard } from '../../components/auth/AuthCard';
 import { SecureInput } from '../../components/auth/SecureInput';
 import { LoadingOverlay } from '../../components/auth/LoadingOverlay';
 import { SecurityBadge } from '../../components/auth/SecurityBadge';
+import { useToast } from '../../context/ToastContext';
 
 export default function ForgotPassword() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
   
   const {
     register,
@@ -32,6 +34,7 @@ export default function ForgotPassword() {
       setError(null);
       await authService.resetPassword(data.email);
       setIsSubmitted(true);
+      toast('info', 'Recovery protocol initiated');
     } catch (err: any) {
       setError(err.message || 'Failed to initiate recovery protocol.');
     }
