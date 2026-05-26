@@ -31,18 +31,47 @@ const MOCK_USERS: User[] = [
   }
 ];
 
+// Simulated account lock tracking
+const failedAttempts = new Map<string, { count: number; lockedUntil: number | null }>();
+const MAX_ATTEMPTS = 3;
+const LOCK_DURATION = 5 * 60 * 1000; // 5 minutes
+
 export const authService = {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
     // Simulate network delay for realistic feel
     await delay(1200);
 
+    const email = credentials.email.toLowerCase();
+    const userRecord = failedAttempts.get(email) || { count: 0, lockedUntil: null };
+
+    // Check if account is currently locked
+    if (userRecord.lockedUntil && userRecord.lockedUntil > Date.now()) {
+      const remainingMins = Math.ceil((userRecord.lockedUntil - Date.now()) / 60000);
+      throw new Error(`SECURITY ALERT: Account locked due to multiple unauthorized access attempts. Try again in ${remainingMins} minute(s).`);
+    } else if (userRecord.lockedUntil && userRecord.lockedUntil <= Date.now()) {
+      // Lock expired, reset
+      userRecord.count = 0;
+      userRecord.lockedUntil = null;
+    }
+
     const user = MOCK_USERS.find(u => u.email === credentials.email);
 
     // In a real app, we would verify the password hash here.
-    // For this mock, we just check if the email exists. If it doesn't, or password is wrong (we'll just pretend 'Password123!' is valid)
     if (!user || credentials.password !== 'Secure@123') {
-      throw new Error('Invalid email or password');
+      userRecord.count += 1;
+      
+      if (userRecord.count >= MAX_ATTEMPTS) {
+        userRecord.lockedUntil = Date.now() + LOCK_DURATION;
+        failedAttempts.set(email, userRecord);
+        throw new Error(`SECURITY ALERT: Account locked due to multiple unauthorized access attempts. Try again in 5 minute(s).`);
+      }
+      
+      failedAttempts.set(email, userRecord);
+      throw new Error(`Authentication failed. ${MAX_ATTEMPTS - userRecord.count} attempt(s) remaining before lock.`);
     }
+
+    // Success - clear attempts
+    failedAttempts.delete(email);
 
     // Generate mock JWT
     const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));

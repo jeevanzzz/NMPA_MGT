@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Mail, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Mail, ArrowRight, CheckCircle, AlertOctagon } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 
 import { useAuth } from '../../auth/hooks/useAuth';
@@ -16,6 +17,7 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const {
     register,
@@ -34,7 +36,10 @@ export default function Login() {
     try {
       setError(null);
       await login(data);
-      navigate('/dashboard');
+      setIsSuccess(true);
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1500);
     } catch (err: any) {
       setError(err.message || 'Authentication failed');
     }
@@ -94,19 +99,48 @@ export default function Login() {
           </Link>
         </div>
 
-        {error && (
-          <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm text-center">
-            {error}
-          </div>
-        )}
+        <AnimatePresence mode="wait">
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3"
+            >
+              <AlertOctagon className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+              <div className="text-red-400 text-sm font-medium leading-relaxed">
+                {error.split('. ').map((line, i) => (
+                  <span key={i} className="block">{line}{i < error.split('. ').length - 1 ? '.' : ''}</span>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <button
           type="submit"
-          disabled={isSubmitting}
-          className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-medium py-2.5 rounded-lg transition-all flex items-center justify-center gap-2 group border border-cyan-500/50 shadow-[0_0_20px_rgba(8,145,178,0.2)] hover:shadow-[0_0_30px_rgba(8,145,178,0.4)] disabled:opacity-50 disabled:pointer-events-none"
+          disabled={isSubmitting || isSuccess}
+          className={`w-full font-medium py-2.5 rounded-lg transition-all flex items-center justify-center gap-2 group border disabled:opacity-50 disabled:pointer-events-none ${
+            isSuccess 
+              ? 'bg-emerald-600 border-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.2)]'
+              : 'bg-cyan-600 hover:bg-cyan-500 text-white border-cyan-500/50 shadow-[0_0_20px_rgba(8,145,178,0.2)] hover:shadow-[0_0_30px_rgba(8,145,178,0.4)]'
+          }`}
         >
-          <span>INITIATE CONNECTION</span>
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          {isSuccess ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex items-center gap-2"
+            >
+              <CheckCircle className="w-5 h-5" />
+              <span>CONNECTION SECURED</span>
+            </motion.div>
+          ) : (
+            <>
+              <span>INITIATE CONNECTION</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </>
+          )}
         </button>
       </form>
     </AuthCard>
